@@ -36,6 +36,9 @@ exports.updatePost = (req, res) => {
   res.json({ success: true, data: post });
 };
 
+
+
+
 exports.deletePost = (req, res) => {
   const id = parseInt(req.params.id, 10);
   const index = posts.findIndex(p => p.id === id);
