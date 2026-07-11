@@ -1,0 +1,135 @@
+/* src/components/Posts/Posts.css */
+
+.posts-section {
+  padding: 2rem;
+  background-color: var(--bg-primary, #f9fafb);
+}
+
+.posts-section h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-primary, #111);
+}
+
+/* Form styling */
+.post-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.post-form input[type="text"],
+.post-form input[type="url"],
+.post-form textarea {
+  flex: 1 1 250px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.post-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.post-form button {
+  flex: 0 0 auto;
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6; /* blue-500 */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.post-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.post-form button:hover:not(:disabled) {
+  background-color: #2563eb; /* blue-600 */
+}
+
+/* Grid layout for posts */
+.posts-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.post-item {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.post-item h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  color: var(--text-primary, #111);
+}
+
+.post-item p {
+  margin: 0.25rem 0;
+  color: #444;
+}
+
+.post-image {
+  width: 100%;
+  height: auto;
+  margin: 0.5rem 0;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.post-date {
+  font-size: 0.85rem;
+  color: #777;
+  margin-top: auto;
+}
+
+.post-delete-btn {
+  margin-top: 0.5rem;
+  align-self: flex-end;
+  background: #ef4444; /* red-500 */
+  color: white;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.post-delete-btn:hover {
+  background: #dc2626; /* red-600 */
+}
+
+/* Loading / error / empty states */
+.posts-loading,
+.posts-error,
+.posts-empty {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #555;
+  margin-top: 2rem;
+}
+
+@media (max-width: 600px) {
+  .post-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

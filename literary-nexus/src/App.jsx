@@ -5,6 +5,7 @@ import Schedule from './components/Schedule/Schedule';
 import RSVPForm from './components/RSVPForm/RSVPForm';
 import Venue from './components/Venue/Venue';
 import Footer from './components/Footer/Footer';
+import Posts from './components/Posts/Posts';
 import { fetchEventData, fetchAuthors } from './services/api';
 import './styles/variables.css';
 import './styles/global.css';
@@ -46,6 +47,7 @@ function App() {
       <Schedule />
       <RSVPForm />
       <Venue event={data.event} />
+      <Posts />
       <Footer />
     </main>
   );
