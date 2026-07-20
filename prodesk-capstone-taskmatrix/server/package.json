@@ -1,0 +1,55 @@
+{
+  "name": "taskmatrix-server",
+  "version": "1.0.0",
+  "description": "TaskMatrix Backend API",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "taskmatrix",
+    "mern",
+    "project-management",
+    "node",
+    "express",
+    "mongodb"
+  ],
+  "author": "Mahesh",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cloudinary": "^2.7.0",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.0",
+    "morgan": "^1.10.1",
+    "multer": "^2.0.2",
+    "nanoid": "^6.0.0",
+    "node-cron": "^4.2.1",
+    "nodemailer": "^7.0.5",
+    "socket.io": "^4.8.1",
+    "uuid": "^14.0.1",
+    "validator": "^13.15.15",
+    "winston": "^3.17.0",
+    "zod": "^4.1.5"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^10.1.8",
+    "jest": "^30.0.5",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.9.5"
+  }
+}
