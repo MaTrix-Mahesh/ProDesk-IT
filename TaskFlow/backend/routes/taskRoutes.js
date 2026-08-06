@@ -3,14 +3,19 @@ const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
 const {
   getTasks,
+  getTaskById,
   createTask,
   updateTask,
-  deleteTask
+  deleteTask,
 } = require('../controllers/taskController');
 
 // @desc    Get all tasks (Protected)
 // @route   GET /api/tasks
 router.get('/', protect, getTasks);
+
+// @desc    Get a single task by ID (Protected)
+// @route   GET /api/tasks/:id
+router.get('/:id', protect, getTaskById);
 
 // @desc    Create a new task (Protected)
 // @route   POST /api/tasks

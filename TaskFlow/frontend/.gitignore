@@ -79,3 +79,4 @@ vite.config.js.tsbuildinfo
 # ============================
 uploads/
 public/uploads/
+.vercel

@@ -10,12 +10,17 @@ const taskRoutes = require('./routes/taskRoutes');
 
 const app = express();
 
-// Middleware
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173', // Vite default port
-  credentials: true
-}));
+// CORS configuration
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : '*',
+    credentials: true,
+  })
+);
+
+// Body parser
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -23,13 +28,25 @@ app.use('/api/tasks', taskRoutes);
 
 // Health check
 app.get('/', (req, res) => {
-  res.send('API is running...');
+  res.json({ message: 'API is running...', status: 'ok' });
+});
+
+// 404 handler for unknown routes
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route not found' });
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Server error', error: err.message });
 });
 
 // Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;
 
-mongoose.connect(process.env.MONGO_URI)
+mongoose
+  .connect(process.env.MONGO_URI)
   .then(() => {
     console.log('MongoDB Connected Successfully');
     app.listen(PORT, () => {

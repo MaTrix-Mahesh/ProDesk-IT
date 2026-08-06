@@ -1,14 +1,33 @@
-# TaskFlow
+# TaskMatrix AI
 
-A full-stack task management application built with the MERN stack (MongoDB, Express, React, Node.js). This project was developed as part of Sprint 14 to demonstrate authentication, protected routes, and CRUD operations.
+A full-stack task management application built with the MERN stack (MongoDB, Express, React, Node.js). This project was developed as part of Sprint 15 to deliver a **feature-complete** application with full CRUD operations, ownership validation, and a modern responsive dashboard.
 
 ## Features
 
-- **User Authentication** — Register and login with JWT-based authentication
-- **Protected Routes** — Dashboard and task endpoints are accessible only to authenticated users
-- **Task Management** — View, create, update, and delete tasks (API ready, frontend dashboard displays tasks)
-- **Responsive UI** — Clean, modern interface built with React and custom CSS
-- **API Proxy** — Vite dev server proxies `/api` requests to the backend
+### Authentication
+- **User Registration** — Create an account with name, email, and password
+- **User Login** — Secure login with JWT-based authentication
+- **Password Hashing** — Passwords hashed with bcryptjs (10 salt rounds)
+- **Protected Routes** — Dashboard and task endpoints accessible only to authenticated users
+- **Token Verification** — JWT middleware with proper error handling (expired/invalid tokens)
+- **Auto Logout** — Automatic redirect to login on 401 responses
+
+### Task Management (Full CRUD)
+- **Create** — Create tasks with title, description, status, priority, and due date
+- **Read** — Dashboard auto-loads tasks after login with loading/error/empty states
+- **Update** — Edit tasks via modal with pre-filled data, updates UI without refresh
+- **Delete** — Delete tasks with confirmation modal and optimistic UI (no page reload)
+- **Ownership Validation** — Every task is tied to the logged-in user; 403 Forbidden on unauthorized access
+- **Validation** — Missing fields, invalid ObjectId, document not found, unauthorized access, invalid JWT all return proper HTTP status codes
+
+### Dashboard
+- **Sidebar** — Navigation with Dashboard, My Tasks, Statistics, and Profile views
+- **Navbar** — Sticky header with date, user info, and quick "New Task" button
+- **Dashboard Cards** — Total, Completed, In Progress, and Pending task counts
+- **Recent Activity** — Latest 5 tasks with status indicators
+- **Statistics** — Task breakdown, high priority count, overdue count, and completion rate progress bar
+- **User Profile** — Avatar, member since, task stats, and logout
+- **Responsive Design** — Mobile-friendly with collapsible sidebar
 
 ## Tech Stack
 
@@ -18,7 +37,7 @@ A full-stack task management application built with the MERN stack (MongoDB, Exp
 |--------------|--------------------------|
 | React 18     | UI library               |
 | React Router DOM 6 | Client-side routing |
-| Axios        | HTTP client              |
+| Axios        | HTTP client with interceptors |
 | Vite 6       | Build tool & dev server  |
 
 ### Backend
@@ -41,37 +60,47 @@ A full-stack task management application built with the MERN stack (MongoDB, Exp
 taskflow/
 ├── backend/
 │   ├── controllers/
-│   │   ├── authController.js    # Register & login logic
-│   │   └── taskController.js    # Task CRUD logic (placeholder)
+│   │   ├── authController.js    # Register, login, get profile
+│   │   └── taskController.js    # Full CRUD with ownership validation
 │   ├── middleware/
 │   │   └── authMiddleware.js    # JWT verification middleware
 │   ├── models/
+│   │   ├── Task.js              # Task schema (userId, title, description, status, priority, dueDate)
 │   │   └── User.js              # User schema (name, email, password)
 │   ├── routes/
-│   │   ├── authRoutes.js        # Auth endpoints
-│   │   └── taskRoutes.js        # Task endpoints (protected)
+│   │   ├── authRoutes.js        # Auth endpoints (register, login, me)
+│   │   └── taskRoutes.js        # Task CRUD endpoints (protected)
 │   ├── .env.example             # Environment variable template
 │   ├── package.json
+│   ├── render.yaml              # Render deployment config
 │   └── server.js                # Express app entry point
 ├── frontend/
 │   ├── public/
 │   ├── src/
 │   │   ├── components/
-│   │   │   └── ProtectedRoute.jsx  # Route guard component
+│   │   │   ├── ConfirmationModal.jsx  # Delete confirmation modal
+│   │   │   ├── Navbar.jsx             # Dashboard navbar
+│   │   │   ├── ProtectedRoute.jsx     # Route guard component
+│   │   │   ├── Sidebar.jsx            # Dashboard sidebar
+│   │   │   └── TaskFormModal.jsx      # Create/Edit task modal
+│   │   ├── hooks/
+│   │   │   └── useTasks.js            # Reusable task CRUD hook
 │   │   ├── pages/
-│   │   │   ├── Dashboard.jsx       # Main dashboard view
-│   │   │   ├── Login.jsx           # Login page
-│   │   │   └── Register.jsx        # Registration page
+│   │   │   ├── Dashboard.jsx          # Main dashboard with all views
+│   │   │   ├── Login.jsx              # Login page
+│   │   │   └── Register.jsx           # Registration page
 │   │   ├── services/
-│   │   │   └── api.js              # Axios instance & API functions
-│   │   ├── App.css                 # App-level styles
-│   │   ├── App.jsx                 # Root component with routes
-│   │   ├── index.css               # Global styles
-│   │   └── main.jsx                # React entry point
+│   │   │   └── api.js                 # Axios instance & API functions
+│   │   ├── App.css                    # App-level styles
+│   │   ├── App.jsx                    # Root component with routes
+│   │   ├── index.css                  # Global styles
+│   │   └── main.jsx                   # React entry point
+│   ├── .env.example                   # Frontend environment template
 │   ├── index.html
 │   ├── package.json
-│   └── vite.config.js              # Vite config with API proxy
-├── .gitignore                      # Root gitignore (optional)
+│   ├── vercel.json                    # Vercel deployment config
+│   └── vite.config.js                 # Vite config with API proxy
+├── .gitignore
 └── README.md
 ```
 
@@ -106,6 +135,8 @@ npm install
 
 ### 4. Configure environment variables
 
+#### Backend
+
 Copy the example environment file and fill in your values:
 
 ```bash
@@ -128,6 +159,15 @@ PORT=5000
 # Frontend Client URL (for CORS)
 CLIENT_URL=http://localhost:5173
 ```
+
+#### Frontend
+
+```bash
+cd ../frontend
+cp .env.example .env
+```
+
+For local development, leave `VITE_API_URL` empty to use the Vite proxy.
 
 ## Running the Project
 
@@ -161,6 +201,7 @@ The Vite dev server is configured to proxy `/api` requests to `http://localhost:
 |--------|-----------------------|----------------------|---------------|
 | POST   | `/api/auth/register`  | Register a new user  | No            |
 | POST   | `/api/auth/login`     | Login existing user  | No            |
+| GET    | `/api/auth/me`        | Get current user    | Yes           |
 
 **POST /api/auth/register**
 
@@ -181,7 +222,8 @@ Response (201):
   "user": {
     "id": "60d21b4667d0d8992e610c85",
     "name": "John Doe",
-    "email": "john@example.com"
+    "email": "john@example.com",
+    "createdAt": "2024-01-01T00:00:00.000Z"
   }
 }
 ```
@@ -202,9 +244,10 @@ Response (200):
   "success": true,
   "token": "eyJhbGciOiJIUzI1NiIs...",
   "user": {
-    "id": "60d21b4667d0d8992e610c85",
+    "id": "1d21b2b7d0d8992e610c85",
     "name": "John Doe",
-    "email": "john@example.com"
+    "email": "john@example.com",
+    "createdAt": "2024-01-01T00:00:00.000Z"
   }
 }
 ```
@@ -213,12 +256,53 @@ Response (200):
 
 | Method | Endpoint           | Description        | Auth Required |
 |--------|--------------------|--------------------|---------------|
-| GET    | `/api/tasks`       | Get all tasks      | Yes           |
+| GET    | `/api/tasks`       | Get all user tasks | Yes           |
+| GET    | `/api/tasks/:id`   | Get task by ID     | Yes           |
 | POST   | `/api/tasks`       | Create a new task  | Yes           |
 | PUT    | `/api/tasks/:id`   | Update a task      | Yes           |
 | DELETE | `/api/tasks/:id`   | Delete a task      | Yes           |
 
-> **Note:** Task endpoints currently return placeholder data. Full database integration is pending implementation of the Task model.
+**POST /api/tasks**
+
+Request body:
+```json
+{
+  "title": "Complete Sprint 15",
+  "description": "Finish all features",
+  "status": "In Progress",
+  "priority": "High",
+  "dueDate": "2024-02-01"
+}
+```
+
+Response (201):
+```json
+{
+  "success": true,
+  "message": "Task created successfully",
+  "task": {
+    "_id": "1d21b2b7d0d8992e610c86",
+    "userId": "1d21b2b7d0d8992e610c85",
+    "title": "Write a Sprint 15",
+    "description": "Finish all features",
+    "status": "In Progress",
+    "priority": "High",
+    "dueDate": "2024-02-01T00:00:00.000Z",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+**Error Responses**
+
+| Status | Description |
+|--------|-------------|
+| 400    | Missing fields, invalid ObjectId, validation error |
+| 401    | Invalid JWT, expired token, no token provided |
+| 403    | Forbidden — user does not own the resource |
+| 404    | Task not found |
+| 500    | Server error |
 
 ## Authentication Flow
 
@@ -227,7 +311,8 @@ Response (200):
 3. Frontend stores the token in `localStorage`
 4. Axios interceptor automatically attaches the token as a `Bearer` header to all subsequent requests
 5. Backend `authMiddleware` verifies the token on protected routes
-6. On logout, the token is removed from `localStorage` and the user is redirected to the login page
+6. On 401 responses, the frontend automatically clears storage and redirects to login
+7. On logout, the token is removed from `localStorage` and the user is redirected to the login page
 
 ## Database
 
@@ -235,6 +320,7 @@ Response (200):
 - **ODM:** Mongoose 8
 - **Collections:**
   - `users` — Stores user documents with hashed passwords
+  - `tasks` — Stores task documents with userId ownership reference
 
 ### User Schema
 
@@ -244,7 +330,16 @@ Response (200):
 | email    | String | Required, unique, lowercase        |
 | password | String | Required, min 6 chars, not selected by default |
 
-Passwords are automatically hashed using bcryptjs (salt rounds: 10) before being saved.
+### Task Schema
+
+| Field       | Type     | Constraints                        |
+|-------------|----------|------------------------------------|
+| userId      | ObjectId | Required, ref: User, indexed       |
+| title       | String   | Required, max 120 chars            |
+| description | String   | Optional, max 1000 chars           |
+| status      | String   | Pending / In Progress / Completed  |
+| priority    | String   | Low / Medium / High                |
+| dueDate     | Date     | Optional                           |
 
 ## Scripts
 
@@ -265,48 +360,40 @@ Passwords are automatically hashed using bcryptjs (salt rounds: 10) before being
 | `npm run build` | `vite build`      | Build for production                 |
 | `npm run preview` | `vite preview`  | Preview production build locally     |
 
-## Build & Deployment
+## Deployment
 
-### Build the frontend
+### Frontend — Vercel
 
-```bash
-cd frontend
-npm run build
-```
+1. Push the repository to GitHub
+2. Import the project in [Vercel](https://vercel.com/)
+3. Set the **Root Directory** to `frontend`
+4. Add the environment variable:
+   - `VITE_API_URL` = your Render backend URL (e.g., `https://taskmatrix-backend.onrender.com`)
+5. Deploy
 
-This generates a `dist/` folder with optimized static assets.
+The `vercel.json` file handles SPA routing rewrites.
 
-### Deployment options
+### Backend — Render
 
-- **Backend:** Deploy to [Render](https://render.com/), [Railway](https://railway.app/), [Heroku](https://heroku.com/), or any Node.js hosting platform
-- **Frontend:** Deploy the `dist/` folder to [Vercel](https://vercel.com/), [Netlify](https://netlify.com/), or serve it from the backend's static folder
-- **Database:** Use [MongoDB Atlas](https://www.mongodb.com/atlas) for a cloud database
+1. Push the repository to GitHub
+2. Create a new **Web Service** in [Render](https://render.com/)
+3. Connect the repository
+4. Set the **Root Directory** to `backend`
+5. Add the environment variables:
+   - `MONGO_URI` = your MongoDB Atlas connection string
+   - `JWT_SECRET` = a strong random string
+   - `CLIENT_URL` = your Vercel frontend URL
+   - `PORT` = 5000
+6. Deploy
 
-Make sure to set the environment variables (`MONGO_URI`, `JWT_SECRET`, `PORT`, `CLIENT_URL`) on your hosting platform.
+The `render.yaml` file provides a blueprint for automated deployment.
 
-## Screenshots
+### Database — MongoDB Atlas
 
-> Screenshots will be added here once the UI is finalized.
-
-| Page        | Preview |
-|-------------|---------|
-| Login       | —       |
-| Register    | —       |
-| Dashboard   | —       |
-
-## Future Improvements
-
-- [ ] Implement Task model and full CRUD with database persistence
-- [ ] Add task creation and editing forms in the frontend
-- [ ] Add task filtering and search functionality
-- [ ] Implement pagination for task lists
-- [ ] Add user profile management
-- [ ] Add dark mode support
-- [ ] Write unit and integration tests
-- [ ] Add input validation on both client and server
-- [ ] Implement refresh token rotation
-- [ ] Add email verification on registration
-- [ ] Dockerize the application for easier deployment
+1. Create a free cluster at [MongoDB Atlas](https://www.mongodb.com/atlas)
+2. Create a database user
+3. Add your IP address to the access list
+4. Get the connection string and set it as `MONGO_URI` in both environments
 
 ## Troubleshooting
 
@@ -319,6 +406,7 @@ Make sure to set the environment variables (`MONGO_URI`, `JWT_SECRET`, `PORT`, `
 ### CORS errors
 
 - Ensure `CLIENT_URL` in `backend/.env` matches your frontend URL (default: `http://localhost:5173`)
+- For production, set `CLIENT_URL` to your Vercel URL
 - Restart the backend after changing environment variables
 
 ### "Not authorized" errors
@@ -331,6 +419,21 @@ Make sure to set the environment variables (`MONGO_URI`, `JWT_SECRET`, `PORT`, `
 
 - Change the `PORT` value in `backend/.env` to a different port
 - Update the proxy target in `frontend/vite.config.js` accordingly
+
+## Future Scope
+
+- [ ] Add task filtering and search functionality
+- [ ] Implement pagination for task lists
+- [ ] Add drag-and-drop task board (Kanban view)
+- [ ] Add email notifications for due dates
+- [ ] Add dark mode support
+- [ ] Write unit and integration tests
+- [ ] Implement refresh token rotation
+- [ ] Add email verification on registration
+- [ ] Add team collaboration and shared tasks
+- [ ] Dockerize the application for easier deployment
+- [ ] Add file attachments to tasks
+- [ ] Add activity log/history for each task
 
 ## Contributing
 
